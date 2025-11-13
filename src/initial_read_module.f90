@@ -1840,38 +1840,36 @@ contains
        do i=1,cDFT_NumberAtomGroups
           if(fdf_block(cDFT_BlockLabel(i))) then
              allocate(cDFT_AtomList(i)%Numbers(cDFT_NAtoms(i)))
-             if (inode == ionode) then
-                cDFT_AtomIndexFile = fdf_string(80,'cDFT.AtomIndexFile',def)
-                if(leqi(def,cDFT_AtomIndexFile)) &
-                   call cq_abort("Must define cDFT.AtomIndexFile")
-                call io_assign(io_cDFT)
-                open(unit=io_cDFT,file=cDFT_AtomIndexFile,iostat=stat)
-                if(stat/=0) &
-                   call cq_abort("Error opening cDFT.AtomIndexFile: " // &
-                                 trim(cDFT_AtomIndexFile), stat)
-                cDFT_current_atom_idx = 0
-                do
-                   read(unit=io_cDFT,fmt='(A)',iostat=stat) cDFT_block_line
-                   if(stat < 0) exit
-                   if(stat > 0) cycle
-                   if (trim(cDFT_block_line) == '' .or. cDFT_block_line(1:1) == '#') cycle
-                   cDFT_dash_pos = index(cDFT_block_line, '-')
-                   if(cDFT_dash_pos==0) then
-                      read(unit=cDFT_block_line,fmt=*) cDFT_num_start
-                      cDFT_num_end = cDFT_num_start
-                   else
-                      read(unit=cDFT_block_line(:cDFT_dash_pos-1),fmt=*) cDFT_num_start
-                      read(unit=cDFT_block_line(cDFT_dash_pos+1:),fmt=*) cDFT_num_end
-                   end if
-                   do cDFT_k = cDFT_num_start, cDFT_num_end
-                      cDFT_current_atom_idx=cDFT_current_atom_idx+1
-                      if (cDFT_current_atom_idx > cDFT_NAtoms(i)) &
-                          call cq_abort('Error: Atom count from Block exceeded pre-allocated size.')
-                      cDFT_AtomList(i)%Numbers(cDFT_current_atom_idx) = cDFT_k
-                   end do
+             cDFT_AtomIndexFile = fdf_string(80,'cDFT.AtomIndexFile',def)
+             if(leqi(def,cDFT_AtomIndexFile)) &
+                call cq_abort("Must define cDFT.AtomIndexFile")
+             call io_assign(io_cDFT)
+             open(unit=io_cDFT,file=cDFT_AtomIndexFile,iostat=stat)
+             if(stat/=0) &
+                call cq_abort("Error opening cDFT.AtomIndexFile: " // &
+                               trim(cDFT_AtomIndexFile), stat)
+             cDFT_current_atom_idx = 0
+             do
+                read(unit=io_cDFT,fmt='(A)',iostat=stat) cDFT_block_line
+                if(stat < 0) exit
+                if(stat > 0) cycle
+                if (trim(cDFT_block_line) == '' .or. cDFT_block_line(1:1) == '#') cycle
+                cDFT_dash_pos = index(cDFT_block_line, '-')
+                if(cDFT_dash_pos==0) then
+                   read(unit=cDFT_block_line,fmt=*) cDFT_num_start
+                   cDFT_num_end = cDFT_num_start
+                else
+                   read(unit=cDFT_block_line(:cDFT_dash_pos-1),fmt=*) cDFT_num_start
+                   read(unit=cDFT_block_line(cDFT_dash_pos+1:),fmt=*) cDFT_num_end
+                end if
+                do cDFT_k = cDFT_num_start, cDFT_num_end
+                   cDFT_current_atom_idx=cDFT_current_atom_idx+1
+                   if (cDFT_current_atom_idx > cDFT_NAtoms(i)) &
+                      call cq_abort('Error: Atom count from Block exceeded pre-allocated size.')
+                   cDFT_AtomList(i)%Numbers(cDFT_current_atom_idx) = cDFT_k
                 end do
-                call io_close(io_cDFT)
-             end if
+             end do
+             call io_close(io_cDFT)
           else
              call cq_abort('cDFT block not defined: '//cDFT_BlockLabel(i))
           end if
@@ -1921,38 +1919,36 @@ contains
           do i=1,cDFT_NumberAtomGroups
              if(fdf_block(cDFT_BlockLabel(i))) then
                 allocate(cDFT_AtomList(i)%Numbers(cDFT_NAtoms(i)))
-                if (inode == ionode) then
-                   cDFT_AtomIndexFile = fdf_string(80,'cDFT.AtomIndexFile',def)
-                   if(leqi(def,cDFT_AtomIndexFile)) &
-                      call cq_abort("Must define cDFT.AtomIndexFile")
-                   call io_assign(io_cDFT)
-                   open(unit=io_cDFT,file=cDFT_AtomIndexFile,iostat=stat)
-                   if(stat/=0) &
-                      call cq_abort("Error opening cDFT.AtomIndexFile: " // &
-                                    trim(cDFT_AtomIndexFile), stat)
-                   cDFT_current_atom_idx = 0
-                   do
-                      read(unit=io_cDFT,fmt='(A)',iostat=stat) cDFT_block_line
-                      if(stat < 0) exit
-                      if(stat > 0) cycle
-                      if (trim(cDFT_block_line) == '' .or. cDFT_block_line(1:1) == '#') cycle
-                         cDFT_dash_pos = index(cDFT_block_line, '-')
-                      if(cDFT_dash_pos==0) then
-                         read(unit=cDFT_block_line,fmt=*) cDFT_num_start
-                         cDFT_num_end = cDFT_num_start
-                      else
-                         read(unit=cDFT_block_line(:cDFT_dash_pos-1),fmt=*) cDFT_num_start
-                         read(unit=cDFT_block_line(cDFT_dash_pos+1:),fmt=*) cDFT_num_end
-                      end if
-                      do cDFT_k = cDFT_num_start, cDFT_num_end
-                         cDFT_current_atom_idx=cDFT_current_atom_idx+1
-                         if (cDFT_current_atom_idx > cDFT_NAtoms(i)) &
-                            call cq_abort('Error: Atom count from Block exceeded pre-allocated size.')
-                         cDFT_AtomList(i)%Numbers(cDFT_current_atom_idx) = cDFT_k
-                      end do
+                cDFT_AtomIndexFile = fdf_string(80,'cDFT.AtomIndexFile',def)
+                if(leqi(def,cDFT_AtomIndexFile)) &
+                   call cq_abort("Must define cDFT.AtomIndexFile")
+                call io_assign(io_cDFT)
+                open(unit=io_cDFT,file=cDFT_AtomIndexFile,iostat=stat)
+                if(stat/=0) &
+                   call cq_abort("Error opening cDFT.AtomIndexFile: " // &
+                                  trim(cDFT_AtomIndexFile), stat)
+                cDFT_current_atom_idx = 0
+                do
+                   read(unit=io_cDFT,fmt='(A)',iostat=stat) cDFT_block_line
+                   if(stat < 0) exit
+                   if(stat > 0) cycle
+                   if (trim(cDFT_block_line) == '' .or. cDFT_block_line(1:1) == '#') cycle
+                      cDFT_dash_pos = index(cDFT_block_line, '-')
+                   if(cDFT_dash_pos==0) then
+                      read(unit=cDFT_block_line,fmt=*) cDFT_num_start
+                      cDFT_num_end = cDFT_num_start
+                   else
+                      read(unit=cDFT_block_line(:cDFT_dash_pos-1),fmt=*) cDFT_num_start
+                      read(unit=cDFT_block_line(cDFT_dash_pos+1:),fmt=*) cDFT_num_end
+                   end if
+                   do cDFT_k = cDFT_num_start, cDFT_num_end
+                      cDFT_current_atom_idx=cDFT_current_atom_idx+1
+                      if (cDFT_current_atom_idx > cDFT_NAtoms(i)) &
+                         call cq_abort('Error: Atom count from Block exceeded pre-allocated size.')
+                      cDFT_AtomList(i)%Numbers(cDFT_current_atom_idx) = cDFT_k
                    end do
-                   call io_close(io_cDFT)
-                end if
+                end do
+                call io_close(io_cDFT)
              else
                 call cq_abort('cDFT block not defined: '//cDFT_BlockLabel(i))
              end if
