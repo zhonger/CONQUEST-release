@@ -73,6 +73,8 @@ contains
     implicit none
 
     integer :: i, j, stat, spin
+    character(len=10) :: k_str
+    character(len=10) :: ni_in_cell_str
 
     if (cDFT_NumberAtomGroups > 2) then
        call cq_abort("Maximum of two groups permitted for cDFT (for &
@@ -104,9 +106,18 @@ contains
                   i, cDFT_Target(i)
        do j = 1, cDFT_NAtoms(i)
           flag_cdft_atom(cDFT_AtomList(i)%Numbers(j)) = i
-          if (inode == ionode .AND. iprint_SC > 1) &
+          if (inode == ionode .AND. iprint_SC > 1) then
                write (io_lun, fmt='(4x,"Atom ",2i8)') &
                       j, cDFT_AtomList(i)%Numbers(j)
+               if (cDFT_AtomList(i)%Numbers(j) > ni_in_cell) then
+                   write (unit=k_str, fmt='(I10)') cDFT_AtomList(i)%Numbers(j)
+                   write (unit=ni_in_cell_str, fmt='(I10)') ni_in_cell
+                   call cq_abort(CHAR(10) // &
+                              'Error: Atom index ' // trim(adjustl(k_str)) // &
+                              ' has exceeded total atoms (' // & 
+                              trim(adjustl(ni_in_cell_str)) // ').')
+               end if
+          end if
        enddo
     end do
     allocate(matHzero(nspin), STAT=stat)
