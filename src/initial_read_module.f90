@@ -1844,7 +1844,7 @@ contains
              if(leqi(def,cDFT_AtomIndexFile)) &
                 call cq_abort("Must define cDFT.AtomIndexFile")
              call io_assign(io_cDFT)
-             open(unit=io_cDFT,file=cDFT_AtomIndexFile,iostat=stat)
+             open(unit=io_cDFT,file=cDFT_AtomIndexFile,iostat=stat,status='old')
              if(stat/=0) &
                 call cq_abort("Error opening cDFT.AtomIndexFile: " // &
                                trim(cDFT_AtomIndexFile), stat)
@@ -1923,7 +1923,7 @@ contains
                 if(leqi(def,cDFT_AtomIndexFile)) &
                    call cq_abort("Must define cDFT.AtomIndexFile")
                 call io_assign(io_cDFT)
-                open(unit=io_cDFT,file=cDFT_AtomIndexFile,iostat=stat)
+                open(unit=io_cDFT,file=cDFT_AtomIndexFile,iostat=stat,status='old')
                 if(stat/=0) &
                    call cq_abort("Error opening cDFT.AtomIndexFile: " // &
                                   trim(cDFT_AtomIndexFile), stat)
